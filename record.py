@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import os
@@ -6,24 +6,22 @@ import requests
 import signal
 import sys
 import time
-from urllib.parse import urlunparse
+
 
 def channel_url(options):
-    scheme = 'http'
-    netloc = options.hostname or os.environ.get('HDHR_HOST')
-    path = '/auto/v' + options.channel
-    params = ''
-    query = ''
-    fragment = ''
+    local_ip = None
 
-    if not netloc:
-        print("HDHR_HOST environment variable undefined.")
-        print("    (e.g., export HDHR_HOST='10.10.1.100')\n")
-        sys.exit(2)
+    if options.hostname:
+        local_ip = options.hostname
+    else:
+        response = requests.get("http://ipv4-my.hdhomerun.com/discover")
+        response.raise_for_status()
+        data = response.json()
+        local_ip = data[0]["LocalIP"]
 
-    netloc += ":5004"
+    return "http://{}:5004/auto/v{}".format(local_ip,
+                                            options.channel)
 
-    return urlunparse((scheme, netloc, path, params, query, fragment))
 
 def main(args=None):
     args = args or sys.argv[1:]
@@ -45,7 +43,7 @@ def main(args=None):
     def handler(signum, frame):
         nonlocal done
         done = True
-    
+
     signal.signal(signal.SIGALRM, handler)
     signal.signal(signal.SIGTERM, handler)
     signal.signal(signal.SIGINT, handler)
@@ -61,7 +59,8 @@ def main(args=None):
 
     with open(options.output_file, 'wb') as fd:
         for chunk in response.iter_content(1 * 1024 * 1024):
-            if done: break
+            if done:
+                break
             fd.write(chunk)
 
     response.close()

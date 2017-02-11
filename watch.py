@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -6,27 +6,22 @@ import os
 import requests
 import subprocess
 import sys
-from urllib.parse import urlunparse
 
 
 def lineup_url(options):
-    scheme = 'http'
-    netloc = options.hostname or os.environ.get('HDHR_HOST')
-    path = '/lineup.json'
-    params = ''
-    query = ''
-    fragment = ''
+    if options.hostname:
+        return "http://{}/lineup.json".format(options.hostname)
+    else:
+        response = requests.get("http://ipv4-my.hdhomerun.com/discover")
+        response.raise_for_status()
+        data = response.json()
+        return data[0]["LineupURL"]
 
-    if not netloc:
-        print("HDHR_HOST environment variable undefined.")
-        print("    (e.g., export HDHR_HOST='10.10.1.100')\n")
-        sys.exit(2)
-
-    return urlunparse((scheme, netloc, path, params, query, fragment))
 
 def print_lineup(lineup):
     for channel in lineup:
         print("{GuideNumber},{GuideName},{URL}".format(**channel))
+
 
 def watch_channel(lineup, target):
     for channel in lineup:
@@ -36,6 +31,7 @@ def watch_channel(lineup, target):
             break
     else:
         print("Channel '%s' not found in lineup" % target)
+
 
 def main(args=None):
     args = args or sys.argv[1:]

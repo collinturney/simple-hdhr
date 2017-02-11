@@ -12,15 +12,10 @@ Scripts to browse, view, and record video streams from a [HDHomeRun](http://www.
 
     optional arguments:
       -h, --help            show this help message and exit
-      -u URL, --url URL
       -c CHANNEL, --channel CHANNEL
       -l, --list-channels
 
 ### Examples
-
-Export the channel lineup URL:
-
-    $ export HDHR_HOST="10.10.1.100"
 
 List lineup data:
 
@@ -61,7 +56,7 @@ View channel 7.1 using VLC:
 
     optional arguments:
       -h, --help            show this help message and exit
-      -u URL, --url URL
+      -c CHANNEL, --channel CHANNEL
       -o OUTPUT_FILE, --output-file OUTPUT_FILE
       -m MINUTES, --minutes MINUTES
 
@@ -72,8 +67,6 @@ Record channel 11.1 for 30 minutes:
     $ record.py -c 11.1 -o output.mpg -m 30
 
 Record the nightly news:
-
-    HDHR_HOST=10.10.1.100
 
     30 17 * * * record.py -c 7.1 -o news.mpg -m 30
 
