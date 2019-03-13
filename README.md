@@ -66,7 +66,7 @@ Record channel 11.1 for 30 minutes:
 
     $ record.py -c 11.1 -o output.mpg -m 30
 
-Record the nightly news:
+Record the nightly news using cron:
 
     30 17 * * * record.py -c 7.1 -o news.mpg -m 30
 
